@@ -1,0 +1,52 @@
+VERS LUALATEX
+
+CLASS BOOK [a4,11pt]
+
+INPUT
+
+END
+
+PAC
+    fontenc [T1]
+    OldStandard
+    babel [greek,english]
+    amsmath
+    amssymb
+    amsfonts
+    amsthm
+    mathrsfs
+    mathtools
+END
+
+INNIT
+    THMS
+END
+
+START
+
+    CHAPTER {This is a chapter}
+    
+    Text, inline math  a . b OPLUS c  and // italics // , ** bold ** . Bold math as  BB RFSAF  .
+       F// { A INT _ a _ x }{ SUM _ v _ ^ b ^ BF ffweaR }   
+       RMN dd   
+    
+    EQU
+        INT _ a _ ^ b ^ f(x) dx
+    END
+    
+    ITEMIZE
+        ## dsf
+        ## sss
+    END
+    
+    ENUMERATE
+        ## dsf
+        ## ssa
+    END
+    
+    FIGURE [h]
+        GRAPHICS [width=.4 TXTW ]{images/LacTeX-logo.png}
+    END
+    
+    NOIN Many more commands, see builder.lua. This pdf will be completed later.
+END

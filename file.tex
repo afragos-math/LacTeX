@@ -1,0 +1,144 @@
+\documentclass[a4,11pt]{book}
+\usepackage[T1]{fontenc}
+\usepackage{OldStandard}
+\usepackage[greek,english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+            
+        \newtheorem{theorem}{Theorem}[chapter]
+        
+        \newtheoremstyle{theorem}
+        {0pt}
+        {0pt}
+        {}
+        {}
+        {\bf}
+        {\;}
+        {0.25em}
+        {\thmnumber{{#1}{}~{#2}}
+        \thmnote{~(#3).}}
+        
+        \newtheorem{proposition}[theorem]{Proposition}
+        
+        \newtheoremstyle{proposition}
+        {0pt}
+        {0pt}
+        {\normalfont}
+        {}
+        {\bf}
+        {\;}
+        {0.25em}
+        {\thmnumber{{#1}{}~{#2}}
+        \thmnote{~(#3).}}
+        
+        \newtheorem{definition}[theorem]{Definition}
+        
+        \newtheoremstyle{definition}
+        {0pt}
+        {0pt}
+        {\normalfont}
+        {}
+        {\bf}
+        {\;}
+        {0.25em}
+        {\thmnumber{{#1}{}~{#2}}
+        \thmnote{~(#3).}}
+        
+        \newtheorem{lemma}[theorem]{Lemma}
+            
+        \newtheoremstyle{lemma}
+        {0pt}
+        {0pt}
+        {}
+        {}
+        {\bf}
+        {\;}
+        {0.25em}
+        {\thmnumber{{#1}{}~{#2}}
+        \thmnote{~(#3).}}
+        
+        \newtheorem{corollary}[theorem]{Corollary}
+        
+        \newtheoremstyle{corollary}
+        {0pt}
+        {0pt}
+        {}
+        {}
+        {\bf}
+        {\;}
+        {0.25em}
+        {\thmnumber{{#1}{}~{#2}}
+        \thmnote{~(#3).}}
+        
+        \newtheorem{remark}[theorem]{Remark}
+        
+        \newtheoremstyle{remark}
+        {0pt}
+        {0pt}
+        {}
+        {}
+        {\bf}
+        {\;}
+        {0.25em}
+        {\thmnumber{{#1}{}~{#2}}
+        \thmnote{~(#3).}}
+        
+        \newtheorem{exercise}{Exercise}[chapter]
+        
+        \newtheoremstyle{exercise}
+        {0pt}
+        {0pt}
+        {}
+        {}
+        {\bf}
+        {\;}
+        {0.25em}
+        {\thmnumber{{#1}{}~{#2}}
+        \thmnote{~(#3).}}
+        
+        \newtheorem{conjecture}[theorem]{Conjecture}
+        
+        \newtheoremstyle{conjecture}
+        {0pt}
+        {0pt}
+        {}
+        {}
+        {\bf}
+        {\;}
+        {0.25em}
+        {\thmnumber{{#1}{}~{#2}}
+        \thmnote{~(#3).}}
+        
+        
+\begin{document}
+
+\chapter {This is a chapter}
+
+ Text, inline math \begin{math} a \cdot b \oplus c \end{math} and\emph{ italics},\textbf{ bold}. Bold math as \begin{math} \mathbb{RFSAF}\end{math}.
+ \begin{displaymath} \dfrac { A \int_{ a} x }{ \sum_{ v}^{ b} \mathbf{ffweaR} } \end{displaymath}
+ \begin{displaymath} \mathrm{dd} \end{displaymath}
+
+\begin{equation}
+ \int_{ a}^{ b} f(x) dx
+\end{equation}
+
+\begin{itemize}
+ \item dsf
+ \item sss
+\end{itemize}
+
+\begin{enumerate}
+ \item dsf
+ \item ssa
+\end{enumerate}
+
+\begin{figure} [h]
+ \includegraphics [width=.4 \textwidth ]{images/LacTeX-logo.png}
+\end{figure}
+
+ \noindent Many more commands, see builder.lua. This pdf will be completed later.
+\end{document}
