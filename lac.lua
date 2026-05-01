@@ -7,13 +7,13 @@ local split = require("functions.split")
 local translate = require("functions.translate")
 
 --Clear
-local output = io.open("file.tex", "w")
+local output = io.open(controls.output_file, "w")
 output:write("")
 output:close()
 
 --Opening
-local input = io.open("input.txt", "r")
-output = io.open("file.tex", "a")
+local input = io.open(controls.input_file, "r")
+output = io.open(controls.output_file, "a")
 
 --Initialise
 
@@ -307,6 +307,6 @@ print('LacTeX to LaTeX translation completed!')
 
 --Execute
 if controls.execute_tex then
-    os.execute(vers .. ' file.tex')
+    os.execute(vers .. ' ' .. controls.output_file)
 end
 

@@ -1,4 +1,5 @@
 local unchanged = {
+    ['ALEPH']   = true,
     ['CUP']     = true,
     ['CAP']     = true,
     ['DASHV']   = true,
@@ -23,6 +24,8 @@ local function sets(word)
         return ' \\backslash'
     elseif word == '/0' then
         return ' \\emptyset'
+    elseif word == 'oo' then
+        return ' \\infty'
     elseif word == 'SBS' then
         return ' \\subset'
     elseif word == 'SPS' then

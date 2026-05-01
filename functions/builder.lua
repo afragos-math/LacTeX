@@ -10,6 +10,7 @@ local boldface = require("functions.materials.boldface")
 local boldface_math = require("functions.materials.boldface_math")
 local boxes = require("functions.materials.boxes")
 local calligraphy = require("functions.materials.calligraphy")
+local embellishments = require("functions.materials.embellishments")
 local frakture = require("functions.materials.frakture")
 local matrices = require("functions.materials.matrices")
 local operators = require("functions.materials.operators")
@@ -50,8 +51,10 @@ local arrow = {
     ['<<-']     = true,     --\twoheadleftarrow
     ['x->']     = true,     --\xrightarrow
     ['<-x']     = true,     --\xleftarrow
+    ['x<->']    = true,     --\xleftrightarrow
     ['x=>' ]    = true,     --\xRightarrow
     ['<=x']     = true,     --\xLeftarrow
+    ['x<=>']    = true,     --\xLeftrightarrow
 }
 
 local operator = {
@@ -94,6 +97,7 @@ local order = {
 
 
 local set = {
+    ['ALEPH']   = true,     --\aleph
     ['IN']      = true,     --\ni
     ['NI']      = true,     --\ni
     ['MID']     = true,     --\mid
@@ -113,6 +117,7 @@ local set = {
     ['SPS=']    = true,     --supseteq
     ['\\']      = true,     --\backslash
     ['/0']      = true,     --\emptyset
+    ['oo']      = true,     --\infty
     ['CAP']     = true,     --\cap
     ['CUP']     = true,     --\cup
     ['BCAP']    = true,     --\bigcap
@@ -157,15 +162,49 @@ local box = {
 }
 
 local matrix = {
-    ['MAT']     = true,
-    ['PMAT']    = true,
-    ['BMAT']    = true,
-    ['BBMAT']   = true,
-    ['VMAT']    = true,
-    ['VVMAT']   = true,
+    ['MAT']     = true,     --matrix
+    ['PMAT']    = true,     --pmatrix
+    ['BMAT']    = true,     --bmatrix
+    ['BBMAT']   = true,     --Bmatrix
+    ['VMAT']    = true,     --vmatrix
+    ['VVMAT']   = true,     --Vmatrix
 }
 
---Same name as in LaTeX and uncategorised
+local embellishment = {
+    ['ACUTE']       = true,     --\acute
+    ['BAR']         = true,     --\bar
+    ['BREVE']       = true,     --\breve
+    ['CHECK']       = true,     --\check
+    ['DOT']         = true,     --\dot
+    ['DDOT']        = true,     --\ddot
+    ['HAT']         = true,     --hat
+    ['GRAVE']       = true,     --grave
+    ['MATHRING']    = true,     --\mathring
+    ['VEC']         = true,     --\vec
+    ['WHAT']        = true,     --\widehat
+    ['TIL']         = true,     --\tilde
+    ['WTIL']        = true,     --\widetilde
+    ['UNDER_']      = true,     --\underline
+    ['OVER_']       = true,     --\overline
+    ['UNDER}']      = true,     --\underbrace
+    ['UNDER]']      = true,     --\underbracket
+    ['OVER}']       = true,     --\overbrace
+    ['OVER]']       = true,     --\overbracket
+    ['L<']          = true,     --\langle
+    ['R>']          = true,     --\rangle
+    ['|_']          = true,     --\lfloor
+    ['_|']          = true,     --\rfloor
+    ['|-']          = true,     --\lceil
+    ['-|']          = true,     --\rceil
+    ['UNDER->']     = true,     --\underrigtarrow
+    ['UNDER<-']     = true,     --\underleftarrow
+    ['OVER->']      = true,     --\overrightarrow
+    ['OVER<-']      = true,     --\overleftarrow
+    ['UNDER<->']    = true,     --\underleftrightarrow
+    ['OVER<->']     = true,     --\overleftrightarrow
+}
+
+--Same name as in LaTeX and standalone
 local generic_standalone = {
     ['CHAPTER']         = true,     --Sections
     ['SECTION']         = true,
@@ -203,17 +242,20 @@ local generic_standalone = {
     ['SUP']             = true,
     ['INF']             = true,
     ['BOT']             = true,     --Misc
+    ['BOX']             = true,
     ['CITE']            = true,
+    ['HBAR']            = true,
     ['HFILL']           = true,
     ['ITEM']            = true,
     ['LABEL']           = true,
-    ['LANGLE']          = true,
     ['LEFT']            = true,
     ['NONAME']          = true,
+    ['QED']             = true,
     ['REF']             = true,
     ['RIGHT']           = true,
-    ['RANGLE']          = true,
+    ['SQUARE']          = true,
     ['TOP']             = true,
+    ['TRIANGLE']        = true,
     ['VFILL']           = true,
 }
 
@@ -321,9 +363,14 @@ local function builder(word, environment, inmath)
     elseif word == 'TEXT' then
         return '\\text{ '
         
+    --Embellishments
+    elseif embellishment[word] then
+        return embellishments(word)
+    
     --Indentation and related
     elseif word == 'SKIP' then
-        return '\\medskip' 
+        return '\\medskip'
+
         
     --Miscellaneous
     elseif word == '##' then
@@ -334,6 +381,8 @@ local function builder(word, environment, inmath)
         return ' \\noindent'
     elseif word == 'TXTW' then
         return ' \\textwidth'
+    elseif word == 'LaTeX' then
+        return ' \\LaTeX{}'
     elseif generic_standalone[word] then
         return '\\' .. word:lower()
         

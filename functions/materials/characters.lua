@@ -61,6 +61,7 @@ local map = {
     ['Ο']   = ' O',
     pi      = ' \\pi',
     ['π']   = ' \\pi',
+    varpi   = ' \\varpi',
     Pi      = ' \\Pi',
     ['Π']   = ' \\Pi',
     rho     = ' \\varrho',

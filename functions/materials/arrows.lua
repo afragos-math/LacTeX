@@ -55,10 +55,14 @@ local function arrows(word)
         return ' \\xrightarrow'
     elseif word == '<-x' then
         return ' \\xleftarrow'
+    elseif word == 'x<->' then
+        return ' \\xleftrightarrow'
     elseif word == 'x=>' then
         return ' \\xRightarrow'
     elseif word == '<=x' then
         return ' \\xLeftarrow'
+    elseif word == 'x<=>' then
+        return ' \\xLeftrightarrow'
     end
 end
 
