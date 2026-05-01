@@ -23,8 +23,8 @@ local suscript = require("functions.materials.suscript")
 
 --Initialise
 local arrow = {
-    ['<=']      = true,     --\Rightarrow
-    ['=>']      = true,     --\Leftarrow
+    ['<=']      = true,     --\Leftarrow
+    ['=>']      = true,     --\Rightarrow
     ['<-']      = true,     --\leftarrow
     ['->']      = true,     --\rightarrow
     ['<=>']     = true,     --\Leftrightarrow
@@ -35,6 +35,7 @@ local arrow = {
     ['\\>']     = true,     --\searrow
     ['|^']      = true,     --uparrow
     ['|v']      = true,     --\downarrow
+    ['|^v']     = true,     --\updownarrow
     ['||^']     = true,     --\Uparrow
     ['||v']     = true,     --\Downarrow
     ['||^v']    = true,     --\Updownarrow
@@ -152,7 +153,7 @@ local generic_begin_end_this = {
 --Theorem-like environments
 local box = {
     ['CONJ']    = true,     --Conjecture
-    ['COR']     = true,     --Corrolary
+    ['COR']     = true,     --Corollary
     ['DEF']     = true,     --Definition
     ['EXER']    = true,     --Exercise
     ['LEM']     = true,     --Lemma

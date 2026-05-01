@@ -4,7 +4,7 @@ local M = {}
         if word == 'CONJ' then
             return '\\begin{conjecture}'
         elseif word == 'COR' then
-            return '\\begin{corrolary}'
+            return '\\begin{corollary}'
         elseif word == 'DEF' then
             return '\\begin{definition}'
         elseif word == 'EXER' then
@@ -24,7 +24,7 @@ local M = {}
         if word == 'CONJ' then
             return '\\end{conjecture}'
         elseif word == 'COR' then
-            return '\\end{corrolary}'
+            return '\\end{corollary}'
         elseif word == 'DEF' then
             return '\\end{definition}'
         elseif word == 'EXER' then

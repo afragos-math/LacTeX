@@ -77,10 +77,8 @@ local env_generic = {
 local env_inmath = {
     ['ALIGN']       = true,
     ['ALIGN*']      = true,
-    ['CENTER']      = true,
     ['EQU']         = true,
     ['EQU*']        = true,
-    ['TABULAR']     = true,
 }
 
 --Calligraphic
