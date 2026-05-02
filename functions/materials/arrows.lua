@@ -23,7 +23,7 @@ local function arrows(word)
         return ' \\uparrow'
     elseif word == '|v' then
         return ' \\downarrow'
-    elseif word == '|^v'
+    elseif word == '|^v' then
         return ' \\updownarrow'
     elseif word == '||^' then
         return ' \\Uparrow'
