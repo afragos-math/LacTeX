@@ -1,9 +1,18 @@
 local M = {}
 
-    function M.thms()
+    function M.thms(class)
+        
+        local numbering = ''
+        
+        if class == 'book' then
+            numbering = 'chapter'
+        else
+            numbering = 'section'
+        end
+    
         return [[
             
-        \newtheorem{theorem}{Theorem}[chapter]
+        \newtheorem{theorem}{Theorem}[]] .. numbering .. [[]
         
         \newtheoremstyle{theorem}
         {0pt}

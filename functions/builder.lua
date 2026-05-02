@@ -211,6 +211,7 @@ local generic_standalone = {
     ['SECTION']         = true,
     ['SUBSECTION']      = true,
     ['SUBSUBSECTION']   = true,
+    ['PART']            = true,
     ['CDOTS']           = true,     --Dots
     ['DDOTS']           = true,
     ['LDOTS']           = true,
@@ -242,6 +243,7 @@ local generic_standalone = {
     ['MIN']             = true,
     ['SUP']             = true,
     ['INF']             = true,
+    ['SQRT']            = true,
     ['BOT']             = true,     --Misc
     ['BOX']             = true,
     ['CITE']            = true,
@@ -275,7 +277,7 @@ local punct = {
 
 
 --Bob the builder.
-local function builder(word, environment, inmath)
+local function builder(word, environment, inmath, custom)
 
     --Initialise
     local bb = (word == 'BB' or environment == 'BB')
@@ -371,7 +373,10 @@ local function builder(word, environment, inmath)
     --Indentation and related
     elseif word == 'SKIP' then
         return '\\medskip'
-
+    
+    --Custom
+    elseif custom[word] then
+        return ' \\' .. word
         
     --Miscellaneous
     elseif word == '##' then

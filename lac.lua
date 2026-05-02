@@ -34,8 +34,11 @@ local environment = ''
     local insertion = ''
     local attributes = ''
 
+local custom = {}
+    
 local instart = false
 local inmath = false
+local incommand = false
 
     --Indices, of course
     local index_dmath = 0
@@ -43,11 +46,17 @@ local inmath = false
 
 --Predoc environments
 local predoc = {
-    ['VERS']    = true,
-    ['CLASS']   = true,
-    ['INNIT']   = true,
-    ['INPUT']   = true,
-    ['PAC']     = true,
+    ['VERS']        = true,
+    ['CLASS']       = true,
+    ['INNIT']       = true,
+    ['INPUT']       = true,
+    ['PAC']         = true,
+}
+
+--Start the document, either with \begin{document} or without
+local start = {
+    ['START']   = true,
+    ['START*']  = true,
 }
 
 --Generic environments
@@ -71,6 +80,11 @@ local env_generic = {
     ['BBMAT']       = true,
     ['VMAT']        = true,
     ['VVMAT']       = true,
+}
+
+--newcommand, renewcommand to be added later. 
+local newcommand = {
+    ['NEWCOMMAND']  = true,
 }
 
 --Environments that innitiate inmath
@@ -123,7 +137,7 @@ for line in input:lines() do
             vers_found = true
         
         --\documentclass[]{}
-        elseif environment == 'CLASS' then
+        elseif environment == 'CLASS' and (not class_found) then
             
             --Check if attribute exists or not and diplay appropriately
             if not word:match('%[(.-)%]') then
@@ -137,14 +151,22 @@ for line in input:lines() do
                     --Messaging
                     class_found = true
                     print('Class found: ' .. class)
+                else
+                    class = word:lower()
                 end
-                class = word:lower()
             else
                 attributes = word:match('%[(.-)%]')
             end
         
         --\input{}
         elseif environment == 'INPUT' then
+            
+            --Use default class if none found
+            if not class_found then
+                class_found = true
+                print('No class found, using default: ' .. controls.class_default)
+                output:write(commands.general('documentclass', controls.class_default))
+            end
             
             if insertion ~= '' then
                 output:write(commands.general('input', insertion))
@@ -165,11 +187,11 @@ for line in input:lines() do
                 attributes = word:match('%[(.-)%]')    
             end
             
+        --Prepare theorem-like environments    
         elseif environment == 'INNIT' then
             
-            --Prepare theorem-like environments
             if word == 'THMS' then
-                output:write(innit.thms())
+                output:write(innit.thms(class))
             end
             
         end
@@ -238,33 +260,73 @@ for line in input:lines() do
                 end
             end
             
+            --Bob the builder. Two seperate instances, in \newcommand and in start.
+            if not incommand then
+                inserted_line = inserted_line .. builder(word, environment, inmath, custom)
+            else
+                
+                --If inmath, we are in the definition section
+                if inmath then
+                    output:write(builder(word, environment, inmath, custom))
+                elseif word:match('%[(.-)%]') then
+                    attributes = word
+                elseif word == 'IS' then
+                    inmath = true
+                    
+                    --Check for variables
+                    if attributes == '' then
+                        output:write('}{')
+                    else
+                        output:write('}' .. attributes .. '{')
+                    end
+                    
+                else
+                    custom[word] = true         --Keep a matrix with all of the commands, for the builder.
+                    output:write('\\' .. word)
+                end
+            end
             
-            --Bob the builder
-            inserted_line = inserted_line .. builder(word, environment, inmath)
         end
         
         --Environments before start
         if predoc[word] then
             table.insert(environments, word)
-        elseif word == 'START' then
+            
+        elseif start[word] then
             instart = true
             
-            --Remove 'PREDOC'
-            table.remove(environments)
+            if word == 'START' then
+                --Remove 'PREDOC'
+                table.remove(environments)
+                output:write('\n' .. commands.begin_this('document'))
+            end
             
             table.insert(environments, 'DOCUMENT')
-            output:write('\n' .. commands.begin_this('document'))
-
+            
+        
+        elseif newcommand[word] then
+            incommand = true;
+            instart = true;
+        
+            table.insert(environments, word)
+            output:write('\\' .. word:lower() .. '{')
+            
         --Many 'END's
         elseif word == 'END' then
             --It did its job
             insertion = ''
+            attributes= ''
             
             --Miscellaneous after 'END'
             if environment == 'TEXT' then
                 inmath = true
             elseif env_inmath[environment] then
                 inmath = false
+            elseif newcommand[environment] then
+                incommand = false
+                instart = false
+                inmath = false
+                output:write('}\n')
             end
             
             --Remove it
@@ -289,10 +351,6 @@ end
 
 output:close()
 input:close()
-
-if not class_found then
-    print('No class found, using default: ' .. controls.class_default)
-end
     
 if not vers_found then
     print('No version found, using default: ' .. controls.vers_default)
