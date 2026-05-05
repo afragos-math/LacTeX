@@ -25,6 +25,8 @@ local function orderings(word)
         return ' \\simeq'
     elseif word == '~~=' then
         return ' \\cong'
+    elseif word == '/=' then
+        return ' \\neq'
     end
 end
 

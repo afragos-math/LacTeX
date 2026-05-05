@@ -26,6 +26,7 @@ output = io.open(controls.output_file, "a")
     
 local modified_line = ''
 local inserted_line = ''
+local last_word = ''
 
 local environments = {'PREDOC'}
 local environment = ''
@@ -39,6 +40,7 @@ local custom = {}
 local instart = false
 local inmath = false
 local incommand = false
+local braceafter = true
 
     --Indices, of course
     local index_dmath = 0
@@ -64,6 +66,9 @@ local env_generic = {
     ['CENTER']      = true,
     ['TABULAR']     = true,
     ['FIGURE']      = true,
+    ['FOOTNOTE']    = true,
+    ['TIKZ']        = true,
+    ['PROOF']       = true,
     ['CONJ']        = true,
     ['COR']         = true,
     ['DEF']         = true,
@@ -85,6 +90,18 @@ local env_generic = {
 --newcommand, renewcommand to be added later. 
 local newcommand = {
     ['NEWCOMMAND']  = true,
+}
+
+local declmath = {
+    ['DECLMATH']    = true,
+    ['DECLMATH*']   = true,
+}
+
+local titles = {
+    ['TITLE']   = true,
+    ['AUTHOR']  = true,
+    ['AFFIL']   = true,
+    ['DATE']    = true,
 }
 
 --Environments that innitiate inmath
@@ -147,26 +164,19 @@ for line in input:lines() do
                     
                     --You don't need to parse it again, you silly goose
                     table.remove(environments)
-                    
-                    --Messaging
                     class_found = true
-                    print('Class found: ' .. class)
                 else
                     class = word:lower()
                 end
             else
                 attributes = word:match('%[(.-)%]')
             end
-        
+            
         --\input{}
         elseif environment == 'INPUT' then
             
             --Use default class if none found
-            if not class_found then
-                class_found = true
-                print('No class found, using default: ' .. controls.class_default)
-                output:write(commands.general('documentclass', controls.class_default))
-            end
+            
             
             if insertion ~= '' then
                 output:write(commands.general('input', insertion))
@@ -193,7 +203,31 @@ for line in input:lines() do
             if word == 'THMS' then
                 output:write(innit.thms(class))
             end
-            
+        
+        --Titles and related
+        elseif titles[environment] then
+
+            --Check if attribute exists or not and diplay appropriately
+            if braceafter then
+                
+                if word == 'TODAY' then
+                    insertion = '\\today'
+                else
+                    insertion = word 
+                end
+                
+                if not word:match('%[(.-)%]') then
+                    insertion = '{ ' .. insertion
+                else
+                    insertion = insertion .. '{'
+                end
+                output:write(insertion)
+                braceafter = false
+                
+            else
+                output:write( ' ' .. word)
+            end
+        
         end
         
         --A gazillion commands and Bob the builder
@@ -303,13 +337,33 @@ for line in input:lines() do
             
             table.insert(environments, 'DOCUMENT')
             
+        --Related to the title page
+        elseif titles[word] then
+            table.insert(environments, word)
+            output:write('\\' .. word:lower())
         
+        --\newcommand or \renewcommand
         elseif newcommand[word] then
-            incommand = true;
-            instart = true;
+            incommand = true
+            instart = true
         
             table.insert(environments, word)
             output:write('\\' .. word:lower() .. '{')
+        
+        --DECLMATH
+        elseif word == 'DECLMATH' then
+            incommand = true
+            instart = true
+            
+            table.insert(environments, word)
+            output:write('\\' .. 'DeclareMathOperator' .. '{')
+            
+        elseif word == 'DECLMATH*' then
+            incommand = true
+            instart = true
+            
+            table.insert(environments, word)
+            output:write('\\' .. 'DeclareMathOperator*' .. '{')
             
         --Many 'END's
         elseif word == 'END' then
@@ -322,7 +376,7 @@ for line in input:lines() do
                 inmath = true
             elseif env_inmath[environment] then
                 inmath = false
-            elseif newcommand[environment] then
+            elseif newcommand[environment] or declmath[environment] then
                 incommand = false
                 instart = false
                 inmath = false
@@ -338,8 +392,21 @@ for line in input:lines() do
             end
         end
         
+    last_word = word    
     end
     
+    --Titles end with line
+    if titles[last_word] then
+        braceafter = true
+        output:write('{}\n')
+        table.remove(environments)
+    elseif not braceafter then
+        braceafter = true
+        output:write(' }\n')
+        table.remove(environments)
+    end
+    
+    --Line skip instart
     if instart and inserted_line ~= '' then
         output:write(inserted_line .. '\n')
         inserted_line = ''

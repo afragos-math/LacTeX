@@ -7,7 +7,6 @@ return {
     output_file     = 'file.tex',           --Which is your output file?
     
     vers_default    = 'pdflatex',           --What should the default version be?
-    class_default   = 'article',            --what should the default class be?
     
     execute_tex     = false,                --Do you want to compile .tex afterwards?
 }

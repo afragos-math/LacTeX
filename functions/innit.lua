@@ -90,9 +90,9 @@ local M = {}
         {\thmnumber{{#1}{}~{#2}}
         \thmnote{~(#3).}}
         
-        \newtheorem{exercise}{Exercise}[chapter]
+        \newtheorem{conjecture}[theorem]{Conjecture}
         
-        \newtheoremstyle{exercise}
+        \newtheoremstyle{conjecture}
         {0pt}
         {0pt}
         {}
@@ -103,9 +103,9 @@ local M = {}
         {\thmnumber{{#1}{}~{#2}}
         \thmnote{~(#3).}}
         
-        \newtheorem{conjecture}[theorem]{Conjecture}
+        \newtheorem{exercise}{Exercise}[]] .. numbering .. [[]
         
-        \newtheoremstyle{conjecture}
+        \newtheoremstyle{exercise}
         {0pt}
         {0pt}
         {}

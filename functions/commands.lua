@@ -23,5 +23,5 @@ local M = {}
     function M.end_this(command)
         return '\\end{' .. command .. '}'
     end
-    
+
 return M

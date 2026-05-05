@@ -73,6 +73,9 @@ local operator = {
     ['PROD']    = true,     --\prod
     ['COPROD']  = true,     --\coprod
     ['SUM']     = true,     --\sum
+    ['|E']      = true,     --\mathbb{E}
+    ['|P']      = true,     --\mathbb{P}
+    ['|V']      = true,     --\mathbb{V}
 }
 
 local suscr = {
@@ -94,6 +97,7 @@ local order = {
     ['~~~']     = true,     --\approx
     ['~=']      = true,     --\simeq
     ['~~=']     = true,     --\cong
+    ['/=']      = true,     --\neq
 }
 
 
@@ -146,8 +150,13 @@ local generic_begin_end_this = {
     ['CENTER']      = true,
     ['ENUMERATE']   = true,
     ['ITEMIZE']     = true,
+    ['PROOF']       = true,
     ['TABULAR']     = true,
     ['FIGURE']      = true,
+}
+
+local simplest_begin = {
+    ['FOOTNOTE']    = true,
 }
 
 --Theorem-like environments
@@ -223,17 +232,17 @@ local generic_standalone = {
     ['NATURAL']         = true,
     ['NPARALLEL']       = true,
     ['PM']              = true,
+    ['HREF']            = true,     --Environments
+    ['MAKETITLE']       = true,
+    ['TABLEOFCONTENTS'] = true,
     ['ARCSIN']          = true,     --Functions
     ['SIN']             = true,
     ['ARCCOS']          = true,
     ['COS']             = true,
     ['ARCTAN']          = true,
     ['TAN']             = true,
-    ['ARCCOT']          = true,
     ['COT']             = true,
-    ['ARCSEC']          = true,
     ['SEC']             = true,
-    ['ARCSEC']          = true,
     ['CSC']             = true,
     ['SINH']            = true,
     ['COSH']            = true,
@@ -263,7 +272,8 @@ local generic_standalone = {
 }
 
 local generic_end = {
-    ['TEXT']    = true,
+    ['FOOTNOTE']    = true,
+    ['TEXT']        = true,
 }
 
 local punct = {
@@ -280,6 +290,7 @@ local punct = {
 local function builder(word, environment, inmath, custom)
 
     --Initialise
+    local ininput = (word == 'INPUT' or environment == 'INPUT')
     local bb = (word == 'BB' or environment == 'BB')
     local bf = (word == 'BF' or environment == 'BF')
     local cal = (word == 'CAL' or environment == 'CAL')
@@ -288,12 +299,19 @@ local function builder(word, environment, inmath, custom)
     local scr = (word == 'SCR' or environment == 'SCR')
     
     --Sub and supscript
-    if suscr[word] then
+    if ininput then
+        return ''
+        
+    elseif suscr[word] then
         return suscript(word, environment)
         
     --\begin{} generic
     elseif generic_begin_end_this[word] then
         return commands.begin_this(word:lower())
+    
+    --Commands that begin as \command{...} and have been implemented as 'COMMAND ... END'
+    elseif simplest_begin[word] then
+        return ' \\' .. word:lower() .. '{'
         
     --\begin{equation} and *
     elseif word == 'EQU' then
@@ -374,6 +392,12 @@ local function builder(word, environment, inmath, custom)
     elseif word == 'SKIP' then
         return '\\medskip'
     
+    --Figures
+    elseif word == 'GRAPHICS' then
+        return ' \\includegraphics'
+    elseif word == 'TIKZ' then
+        return commands.begin_this('tikzpicture')
+    
     --Custom
     elseif custom[word] then
         return ' \\' .. word
@@ -381,10 +405,10 @@ local function builder(word, environment, inmath, custom)
     --Miscellaneous
     elseif word == '##' then
         return ' \\item'
-    elseif word == 'GRAPHICS' then
-        return ' \\includegraphics'
     elseif word == 'NOIN' then
         return ' \\noindent'
+    elseif word == 'REDIR' then
+        return ' \\hyperref'
     elseif word == 'TXTW' then
         return ' \\textwidth'
     elseif word == 'LaTeX' then
@@ -402,6 +426,8 @@ local function builder(word, environment, inmath, custom)
             return commands.end_this('equation')
         elseif environment == 'EQU*' then
             return commands.end_this('equation*')
+        elseif environment == 'TIKZ' then
+            return commands.end_this('tikzpicture')
         elseif matrix[environment] then
             return matrices.end_this(environment)
         elseif box[environment] then

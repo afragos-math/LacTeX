@@ -21,6 +21,12 @@ local function operators(word)
         return ' \\nabla'
     elseif word == 'PD' then
         return ' \\partial'
+    elseif word == '|P' then
+        return ' \\mathbb{P}'
+    elseif word == '|E' then
+        return ' \\mathbb{E}'
+    elseif word == '|V' then
+        return ' \\mathbb{V}'
     elseif unchanged[word] then
         return ' \\' .. word:lower()
     end
