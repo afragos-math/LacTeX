@@ -12,6 +12,7 @@ local boxes = require("functions.materials.boxes")
 local calligraphy = require("functions.materials.calligraphy")
 local embellishments = require("functions.materials.embellishments")
 local frakture = require("functions.materials.frakture")
+local large = require("functions.materials.large")
 local matrices = require("functions.materials.matrices")
 local operators = require("functions.materials.operators")
 local orderings = require("functions.materials.orderings")
@@ -155,6 +156,27 @@ local generic_begin_end_this = {
     ['FIGURE']      = true,
 }
 
+local sections = {
+    ['CHAPTER']         = true,
+    ['SECTION']         = true,
+    ['SUBSECTION']      = true,
+    ['SUBSUBSECTION']   = true,
+    ['PART']            = true,
+}
+
+local bigger = {
+    ['TINY']            = true,
+    ['SCRIPTSIZE']      = true,
+    ['FOOTNOTESIZE']    = true,
+    ['SMALL']           = true,
+    ['NORMALSIZE']      = true,
+    ['LARGE']           = true,
+    ['LLARGE']          = true,
+    ['LLLARGE']         = true,
+    ['HUGE']            = true,
+    ['HHUGE']           = true,
+}
+
 local simplest_begin = {
     ['FOOTNOTE']    = true,
 }
@@ -216,11 +238,6 @@ local embellishment = {
 
 --Same name as in LaTeX and standalone
 local generic_standalone = {
-    ['CHAPTER']         = true,     --Sections
-    ['SECTION']         = true,
-    ['SUBSECTION']      = true,
-    ['SUBSUBSECTION']   = true,
-    ['PART']            = true,
     ['CDOTS']           = true,     --Dots
     ['DDOTS']           = true,
     ['LDOTS']           = true,
@@ -253,7 +270,8 @@ local generic_standalone = {
     ['SUP']             = true,
     ['INF']             = true,
     ['SQRT']            = true,
-    ['BOT']             = true,     --Misc
+    ['ADDCONTENTSLINE'] = true,     --Misc
+    ['BOT']             = true,
     ['BOX']             = true,
     ['CITE']            = true,
     ['HBAR']            = true,
@@ -261,11 +279,13 @@ local generic_standalone = {
     ['ITEM']            = true,
     ['LABEL']           = true,
     ['LEFT']            = true,
+    ['NEWPAGE']         = true,
     ['NONAME']          = true,
     ['QED']             = true,
     ['REF']             = true,
     ['RIGHT']           = true,
     ['SQUARE']          = true,
+    ['THISPAGESTYLE']   = true,
     ['TOP']             = true,
     ['TRIANGLE']        = true,
     ['VFILL']           = true,
@@ -312,7 +332,15 @@ local function builder(word, environment, inmath, custom)
     --Commands that begin as \command{...} and have been implemented as 'COMMAND ... END'
     elseif simplest_begin[word] then
         return ' \\' .. word:lower() .. '{'
-        
+     
+    --Sections
+    elseif sections[word] then
+        return '\\' .. word:lower() .. '{'
+    
+    --Bibliography
+    elseif word == 'BIBLIOGRAPHY' then
+        return '\\begin{thebibliography}'
+    
     --\begin{equation} and *
     elseif word == 'EQU' then
         return commands.begin_this('equation')
@@ -364,6 +392,10 @@ local function builder(word, environment, inmath, custom)
         
         return s
     
+    --Larger
+    elseif bigger[word] then
+        return large(word)
+    
     --Sets
     elseif set[word] then
         return sets(word)
@@ -404,7 +436,11 @@ local function builder(word, environment, inmath, custom)
         
     --Miscellaneous
     elseif word == '##' then
-        return ' \\item'
+        if environment ~= 'BIBLIOGRAPHY' then
+            return ' \\item'
+        else
+            return ' \\bibitem'
+        end
     elseif word == 'NOIN' then
         return ' \\noindent'
     elseif word == 'REDIR' then
@@ -414,7 +450,7 @@ local function builder(word, environment, inmath, custom)
     elseif word == 'LaTeX' then
         return ' \\LaTeX{}'
     elseif generic_standalone[word] then
-        return '\\' .. word:lower()
+        return ' \\' .. word:lower()
         
     --'END'
     elseif word == 'END' then
@@ -432,6 +468,8 @@ local function builder(word, environment, inmath, custom)
             return matrices.end_this(environment)
         elseif box[environment] then
             return boxes.end_this(environment)
+        elseif environment == 'BIBLIOGRAPHY' then
+            return '\\end{thebibliography}'
         else
            return '' 
         end

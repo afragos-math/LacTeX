@@ -63,28 +63,29 @@ local start = {
 
 --Generic environments
 local env_generic = {
-    ['CENTER']      = true,
-    ['TABULAR']     = true,
-    ['FIGURE']      = true,
-    ['FOOTNOTE']    = true,
-    ['TIKZ']        = true,
-    ['PROOF']       = true,
-    ['CONJ']        = true,
-    ['COR']         = true,
-    ['DEF']         = true,
-    ['ENUMERATE']   = true,
-    ['EXER']        = true,
-    ['ITEMIZE']     = true,
-    ['LEM']         = true,
-    ['PROP']        = true,
-    ['REM']         = true,
-    ['THM']         = true,
-    ['MAT']         = true,
-    ['PMAT']        = true,
-    ['BMAT']        = true,
-    ['BBMAT']       = true,
-    ['VMAT']        = true,
-    ['VVMAT']       = true,
+    ['BIBLIOGRAPHY']    = true,
+    ['CENTER']          = true,
+    ['TABULAR']         = true,
+    ['FIGURE']          = true,
+    ['FOOTNOTE']        = true,
+    ['TIKZ']            = true,
+    ['PROOF']           = true,
+    ['CONJ']            = true,
+    ['COR']             = true,
+    ['DEF']             = true,
+    ['ENUMERATE']       = true,
+    ['EXER']            = true,
+    ['ITEMIZE']         = true,
+    ['LEM']             = true,
+    ['PROP']            = true,
+    ['REM']             = true,
+    ['THM']             = true,
+    ['MAT']             = true,
+    ['PMAT']            = true,
+    ['BMAT']            = true,
+    ['BBMAT']           = true,
+    ['VMAT']            = true,
+    ['VVMAT']           = true,
 }
 
 --newcommand, renewcommand to be added later. 
@@ -97,11 +98,21 @@ local declmath = {
     ['DECLMATH*']   = true,
 }
 
+--Titlepage
 local titles = {
     ['TITLE']   = true,
     ['AUTHOR']  = true,
     ['AFFIL']   = true,
     ['DATE']    = true,
+}
+
+--Sections
+local sections = {
+    ['PART']            = true,
+    ['CHAPTER']         = true,
+    ['SECTION']         = true,
+    ['SUBSECTION']      = true,
+    ['SUBSUBSECTION']   = true,
 }
 
 --Environments that innitiate inmath
@@ -207,14 +218,14 @@ for line in input:lines() do
         --Titles and related
         elseif titles[environment] then
 
+            if word == 'TODAY' then
+                insertion = '\\today'
+            else
+                insertion = word 
+            end
+            
             --Check if attribute exists or not and diplay appropriately
             if braceafter then
-                
-                if word == 'TODAY' then
-                    insertion = '\\today'
-                else
-                    insertion = word 
-                end
                 
                 if not word:match('%[(.-)%]') then
                     insertion = '{ ' .. insertion
@@ -225,7 +236,7 @@ for line in input:lines() do
                 braceafter = false
                 
             else
-                output:write( ' ' .. word)
+                output:write( ' ' .. insertion)
             end
         
         end
@@ -268,6 +279,11 @@ for line in input:lines() do
             elseif env_generic[word] then
                 table.insert(environments, word)
             
+            --Sections
+            elseif sections[word] then
+                braceafter = false
+                table.insert(environments, word)
+             
             --Generic \begin{} that innitiates inmath
             elseif env_inmath[word] then
                 table.insert(environments, word)
@@ -395,6 +411,21 @@ for line in input:lines() do
     last_word = word    
     end
     
+    --Line skip instart
+    if instart and inserted_line ~= '' then
+        output:write(inserted_line .. '\n')
+        inserted_line = ''
+    elseif instart then
+        output:write('\n')
+    end
+    
+    --Sections end with line
+    if sections[environment] and (not braceafter) then
+        braceafter = true
+        output:write(' }\n')
+        table.remove(environments)
+    end
+        
     --Titles end with line
     if titles[last_word] then
         braceafter = true
@@ -404,14 +435,6 @@ for line in input:lines() do
         braceafter = true
         output:write(' }\n')
         table.remove(environments)
-    end
-    
-    --Line skip instart
-    if instart and inserted_line ~= '' then
-        output:write(inserted_line .. '\n')
-        inserted_line = ''
-    elseif instart then
-        output:write('\n')
     end
     
 end
