@@ -6,17 +6,13 @@ local characters = require("functions.materials.characters")
 
 --Materials
 local arrows = require("functions.materials.arrows")
-local boldface = require("functions.materials.boldface")
-local boldface_math = require("functions.materials.boldface_math")
 local boxes = require("functions.materials.boxes")
-local calligraphy = require("functions.materials.calligraphy")
 local embellishments = require("functions.materials.embellishments")
-local frakture = require("functions.materials.frakture")
+local inbrace = require("functions.materials.inbrace")
 local large = require("functions.materials.large")
 local matrices = require("functions.materials.matrices")
 local operators = require("functions.materials.operators")
 local orderings = require("functions.materials.orderings")
-local roman = require("functions.materials.roman")
 local sets = require("functions.materials.sets")
 local script = require("functions.materials.script")
 local suscript = require("functions.materials.suscript")
@@ -181,6 +177,18 @@ local simplest_begin = {
     ['FOOTNOTE']    = true,
 }
 
+--Inbrace environments
+local inbraces = {
+    ['LABEL']   = true,
+    ['REF']     = true,
+    ['BB']      = true,
+    ['BF']      = true,
+    ['CAL']     = true,
+    ['FRAK']    = true,
+    ['RMN']     = true,
+    ['SCR']     = true,
+}
+
 --Theorem-like environments
 local box = {
     ['CONJ']    = true,     --Conjecture
@@ -271,18 +279,19 @@ local generic_standalone = {
     ['INF']             = true,
     ['SQRT']            = true,
     ['ADDCONTENTSLINE'] = true,     --Misc
+    ['APPENDIX']        = true,
+    ['APPENDIXPAGE']    = true,
     ['BOT']             = true,
     ['BOX']             = true,
+    ['COLOR']           = true,
     ['CITE']            = true,
     ['HBAR']            = true,
     ['HFILL']           = true,
     ['ITEM']            = true,
-    ['LABEL']           = true,
     ['LEFT']            = true,
     ['NEWPAGE']         = true,
-    ['NONAME']          = true,
+    ['NONUMBER']        = true,
     ['QED']             = true,
-    ['REF']             = true,
     ['RIGHT']           = true,
     ['SQUARE']          = true,
     ['THISPAGESTYLE']   = true,
@@ -311,13 +320,7 @@ local function builder(word, environment, inmath, custom)
 
     --Initialise
     local ininput = (word == 'INPUT' or environment == 'INPUT')
-    local bb = (word == 'BB' or environment == 'BB')
-    local bf = (word == 'BF' or environment == 'BF')
-    local cal = (word == 'CAL' or environment == 'CAL')
-    local frak = (word == 'FRAK' or environment == 'FRAK')
-    local rmn = (word == 'RMN' or environment == 'RMN')
-    local scr = (word == 'SCR' or environment == 'SCR')
-    
+        
     --Sub and supscript
     if ininput then
         return ''
@@ -355,23 +358,9 @@ local function builder(word, environment, inmath, custom)
     elseif matrix[word] then
         return matrices.begin_this(word)
         
-    --Calligraphy
-    elseif bb then
-        return boldface(word)
-    elseif bf then
-        return boldface_math(word)
-        
-    elseif cal then
-        return calligraphy(word)
-    
-    elseif frak then
-        return frakture(word)
-        
-    elseif rmn then
-        return roman(word)
-        
-    elseif scr then
-        return script(word)
+    --Inbrace environments (such as calligraphy)
+    elseif inbraces[word] or inbraces[environment] then
+        return inbrace(word)
     
     --Italics and bold
     elseif word == '//' then

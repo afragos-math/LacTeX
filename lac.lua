@@ -123,8 +123,10 @@ local env_inmath = {
     ['EQU*']        = true,
 }
 
---Calligraphic
-local cal = {
+--Inbrace environments
+local env_inbraces = {
+    ['LABEL']   = true,
+    ['REF']     = true,
     ['BB']      = true,
     ['BF']      = true,
     ['CAL']     = true,
@@ -278,7 +280,7 @@ for line in input:lines() do
             --Generic environments
             elseif env_generic[word] then
                 table.insert(environments, word)
-            
+                
             --Sections
             elseif sections[word] then
                 braceafter = false
@@ -289,10 +291,10 @@ for line in input:lines() do
                 table.insert(environments, word)
                 inmath = true
                 
-            --Calligraphy
-            elseif cal[word] and (not cal[environment]) then
+            --Inbrace environments
+            elseif env_inbraces[word] and (not env_inbraces[environment]) then
                 table.insert(environments, word)
-            elseif cal[environment] then
+            elseif env_inbraces[environment] then
                 table.remove(environments)
             
             --Italics and bold
