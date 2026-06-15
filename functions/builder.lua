@@ -181,6 +181,7 @@ local simplest_begin = {
 local inbraces = {
     ['LABEL']   = true,
     ['REF']     = true,
+    ['REFP']     = true,
     ['BB']      = true,
     ['BF']      = true,
     ['CAL']     = true,
@@ -302,6 +303,7 @@ local generic_standalone = {
 
 local generic_end = {
     ['FOOTNOTE']    = true,
+    ['SCAPS']       = true,
     ['TEXT']        = true,
 }
 
@@ -360,7 +362,7 @@ local function builder(word, environment, inmath, custom)
         
     --Inbrace environments (such as calligraphy)
     elseif inbraces[word] or inbraces[environment] then
-        return inbrace(word)
+        return inbrace(word, environment)
     
     --Italics and bold
     elseif word == '//' then
@@ -436,6 +438,8 @@ local function builder(word, environment, inmath, custom)
         return ' \\hyperref'
     elseif word == 'TXTW' then
         return ' \\textwidth'
+    elseif word == 'SCAPS' then
+        return ' \\textsc{'
     elseif word == 'LaTeX' then
         return ' \\LaTeX{}'
     elseif generic_standalone[word] then
@@ -444,7 +448,7 @@ local function builder(word, environment, inmath, custom)
     --'END'
     elseif word == 'END' then
         if generic_end[environment] then
-            return ' }'
+            return '}'
         elseif generic_begin_end_this[environment] then
             return commands.end_this(environment:lower())
         elseif environment == 'EQU' then

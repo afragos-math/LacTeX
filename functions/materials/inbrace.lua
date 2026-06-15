@@ -1,8 +1,10 @@
-local function inbrace(word)
+local function inbrace(word, environment)
     if word == 'LABEL' then
         return ' \\label{'
     elseif word == 'REF' then
         return ' \\ref{'
+    elseif word == 'REFP' then
+        return ' (\\ref{'    
     elseif word == 'BB' then
         return ' \\mathbb{'
     elseif word == 'BF' then
@@ -15,6 +17,8 @@ local function inbrace(word)
         return ' \\mathrm{'
     elseif word == 'SCR' then
         return ' \\mathscr{'
+    elseif environment == 'REFP' then
+        return word .. '})'
     else
         return word .. '}'
     end

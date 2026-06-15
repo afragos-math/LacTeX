@@ -68,6 +68,7 @@ local env_generic = {
     ['TABULAR']         = true,
     ['FIGURE']          = true,
     ['FOOTNOTE']        = true,
+    ['SCAPS']           = true,
     ['TIKZ']            = true,
     ['PROOF']           = true,
     ['CONJ']            = true,
@@ -127,6 +128,7 @@ local env_inmath = {
 local env_inbraces = {
     ['LABEL']   = true,
     ['REF']     = true,
+    ['REFP']     = true,
     ['BB']      = true,
     ['BF']      = true,
     ['CAL']     = true,
@@ -215,6 +217,8 @@ for line in input:lines() do
             
             if word == 'THMS' then
                 output:write(innit.thms(class))
+            elseif word == 'THMSGR' then
+                output:write(innit.thmsgr(class))
             end
         
         --Titles and related
