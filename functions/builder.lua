@@ -14,7 +14,6 @@ local matrices = require("functions.materials.matrices")
 local operators = require("functions.materials.operators")
 local orderings = require("functions.materials.orderings")
 local sets = require("functions.materials.sets")
-local script = require("functions.materials.script")
 local suscript = require("functions.materials.suscript")
 
 
