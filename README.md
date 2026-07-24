@@ -4,4 +4,4 @@ In short: ΛacTeX is a small collection of code (in Lua) to make typesetting in 
 
 # Information on how to use it
 
-Can be found here: <a href="https://afragos-math.github.io/files/tools/LacTeX.html"></a>
+Can be found here: <a href="https://afragos-math.github.io/files/tools/LacTeX.html">https://afragos-math.github.io/files/tools/LacTeX.html</a>
