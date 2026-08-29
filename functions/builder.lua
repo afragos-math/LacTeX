@@ -260,6 +260,7 @@ local generic_standalone = {
     ['PM']              = true,
     ['HREF']            = true,     --Environments
     ['MAKETITLE']       = true,
+    ['OVERSET']         = true,
     ['TABLEOFCONTENTS'] = true,
     ['ARCSIN']          = true,     --Functions
     ['SIN']             = true,
@@ -289,12 +290,14 @@ local generic_standalone = {
     ['CITE']            = true,
     ['HBAR']            = true,
     ['HFILL']           = true,
+    ['HRULE']           = true,
     ['ITEM']            = true,
     ['LEFT']            = true,
     ['NEWPAGE']         = true,
     ['NONUMBER']        = true,
     ['QED']             = true,
     ['RIGHT']           = true,
+    ['RULE']            = true,
     ['SQUARE']          = true,
     ['THISPAGESTYLE']   = true,
     ['TOP']             = true,
@@ -440,6 +443,8 @@ local function builder(word, environment, inmath, custom)
         return ' \\hyperref'
     elseif word == 'TXTW' then
         return ' \\textwidth'
+    elseif word == 'WTH' then
+        return ' width'
     elseif word == 'SCAPS' then
         return ' \\textsc{'
     elseif word == 'LaTeX' then

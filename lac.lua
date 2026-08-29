@@ -2,6 +2,7 @@
 local builder = require("functions.builder")
 local commands = require("functions.commands")
 local controls = require("controls")
+local err = require("err")
 local innit = require("functions.innit")
 local split = require("functions.split")
 local translate = require("functions.translate")
@@ -45,6 +46,9 @@ local braceafter = true
     --Indices, of course
     local index_dmath = 0
     local index_math = 0
+    
+--Errors
+local errors = false
 
 --Predoc environments
 local predoc = {
@@ -353,12 +357,22 @@ for line in input:lines() do
             instart = true
             
             if word == 'START' then
-                --Remove 'PREDOC'
-                table.remove(environments)
+                --Remove 'PREDOC'.
+                if environment then
+                    table.remove(environments)
+                    table.insert(environments, 'DOCUMENT')
+                end
                 output:write('\n' .. commands.begin_this('document'))
             end
             
-            table.insert(environments, 'DOCUMENT')
+            if word == 'START*' then
+                --Remove 'PREDOC'. Else, there was an END error.
+                if environment then
+                    table.remove(environments)
+                    --Two times to leave one in the end
+                    for i = 1,2 do table.insert(environments, 'DOCUMENT*') end
+                end
+            end
             
         --Related to the title page
         elseif titles[word] then
@@ -448,18 +462,30 @@ end
 
 output:close()
 input:close()
-    
+
 if not vers_found then
     print('No version found, using default: ' .. controls.vers_default)
 else
     print('Version found: ' .. vers)
 end
 
---Messaging
-print('LacTeX to LaTeX translation completed!')
+--Error handling
+errors = err(index_dmath, index_math, environment, environments[#environments])
 
---Execute
-if controls.execute_tex then
-    os.execute(vers .. ' ' .. controls.output_file)
+--Messaging
+if errors then
+    print('LacTeX to LaTeX translation completed... (with errors)')
+else
+    print('LacTeX to LaTeX translation completed!')
 end
 
+if controls.execute_tex then
+    if errors then
+        print('/!\\ Can\'t continue, errors found.')
+    elseif environment == 'DOCUMENT*' then
+        print('This file is not executable, ending here.')
+    else
+        --Execute
+        os.execute(vers .. ' ' .. controls.output_file)
+    end
+end
