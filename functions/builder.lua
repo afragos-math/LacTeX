@@ -151,12 +151,13 @@ local generic_begin_end_this = {
     ['FIGURE']      = true,
 }
 
-local sections = {
+local env_line_end = {
     ['CHAPTER']         = true,
     ['SECTION']         = true,
     ['SUBSECTION']      = true,
     ['SUBSUBSECTION']   = true,
     ['PART']            = true,
+    ['CAPTION']         = true,
 }
 
 local bigger = {
@@ -283,6 +284,7 @@ local generic_standalone = {
     ['APPENDIXPAGE']    = true,
     ['BOT']             = true,
     ['BOX']             = true,
+    ['CENTERING']       = true,
     ['COLOR']           = true,
     ['CITE']            = true,
     ['HBAR']            = true,
@@ -313,6 +315,7 @@ local punct = {
     ['?']   = true,
     ['!']   = true,
     ['\'']  = true,
+    [')']   = true,
 }
 
 
@@ -338,7 +341,7 @@ local function builder(word, environment, inmath, custom)
         return ' \\' .. word:lower() .. '{'
      
     --Sections
-    elseif sections[word] then
+    elseif env_line_end[word] then
         return '\\' .. word:lower() .. '{'
     
     --Bibliography

@@ -107,13 +107,14 @@ local titles = {
     ['DATE']    = true,
 }
 
---Sections
-local sections = {
+--Sections and other commands that end with line
+local env_line_end = {
     ['PART']            = true,
     ['CHAPTER']         = true,
     ['SECTION']         = true,
     ['SUBSECTION']      = true,
     ['SUBSUBSECTION']   = true,
+    ['CAPTION']         = true,
 }
 
 --Environments that innitiate inmath
@@ -285,8 +286,8 @@ for line in input:lines() do
             elseif env_generic[word] then
                 table.insert(environments, word)
                 
-            --Sections
-            elseif sections[word] then
+            --Sections and other commands that end with line
+            elseif env_line_end[word] then
                 braceafter = false
                 table.insert(environments, word)
              
@@ -425,8 +426,8 @@ for line in input:lines() do
         output:write('\n')
     end
     
-    --Sections end with line
-    if sections[environment] and (not braceafter) then
+    --Sections and related end with line
+    if env_line_end[environment] and (not braceafter) then
         braceafter = true
         output:write(' }\n')
         table.remove(environments)
