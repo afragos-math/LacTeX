@@ -8,5 +8,5 @@ return {
     
     vers_default    = 'pdflatex',           --What should the default version be?
     
-    execute_tex     = true,                 --Do you want to compile .tex afterwards?
+    execute_tex     = false,                 --Do you want to compile .tex afterwards?
 }
