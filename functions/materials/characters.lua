@@ -97,9 +97,6 @@ local map = {
     Omega   = ' \\Omega',
     ['Ω']   = ' \\Omega',
     
-    --\begin{math}
-    ['\\begin{math}'] = ' \\begin{math}',
-    
     --Other miscellaneous characters.
     ['.']       = ' \\cdot',
 }
