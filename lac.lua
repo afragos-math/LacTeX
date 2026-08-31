@@ -12,9 +12,24 @@ local output = io.open(controls.output_file, "w")
 output:write("")
 output:close()
 
+local nonempty_bib = false
+
+if controls.bib_file ~= '' then
+    nonempty_bib = true
+end
+
+if nonempty_bib then
+    local bib = io.open(controls.bib_file, 'w')
+    bib:write("")
+    bib:close()
+end
+
 --Opening
 local input = io.open(controls.input_file, "r")
 output = io.open(controls.output_file, "a")
+if nonempty_bib then
+    bib = io.open(controls.bib_file, "a")
+end
 
 --Initialise
 
@@ -36,6 +51,11 @@ local environment = ''
     local insertion = ''
     local attributes = ''
 
+--Bib write
+local inbib = false
+local has_bib = false
+local inserted_line_bib = ''
+    
 local custom = {}
     
 local instart = false
@@ -67,6 +87,7 @@ local start = {
 
 --Generic environments
 local env_generic = {
+    ['BIB']             = true,
     ['BIBLIOGRAPHY']    = true,
     ['CENTER']          = true,
     ['TABULAR']         = true,
@@ -289,6 +310,10 @@ for line in input:lines() do
             --Generic environments
             elseif env_generic[word] then
                 table.insert(environments, word)
+                if word == 'BIB' then
+                    inbib = true
+                    has_bib = true
+                end
                 
             --Sections and other commands that end with line
             elseif env_line_end[word] then
@@ -323,7 +348,18 @@ for line in input:lines() do
             
             --Bob the builder. Two seperate instances, in \newcommand and in start.
             if not incommand then
-                inserted_line = inserted_line .. builder(word, environment, inmath, custom)
+                
+                --Check if we need to write in the bib file
+                if not inbib then
+                    inserted_line = inserted_line .. builder(word, environment, inmath, custom)
+                else
+                    if word == 'BIB' and nonempty_bib then
+                        output:write('\\nocite{*} \\bibliographystyle{plain} \\bibliography{' .. controls.bib_file:sub(1,-5) .. '}') 
+                    else
+                        inserted_line_bib = inserted_line_bib .. builder(word, environment, inmath, custom)
+                    end
+                end
+            
             else
                 
                 --If inmath, we are in the definition section
@@ -413,6 +449,8 @@ for line in input:lines() do
                 inmath = true
             elseif env_inmath[environment] then
                 inmath = false
+            elseif environment == 'BIB' then
+                inbib = false
             elseif newcommand[environment] or declmath[environment] then
                 incommand = false
                 instart = false
@@ -433,11 +471,24 @@ for line in input:lines() do
     end
     
     --Line skip instart
-    if instart and inserted_line ~= '' then
-        output:write(inserted_line .. '\n')
-        inserted_line = ''
+    if instart and ( inserted_line ~= '' or inserted_line_bib ~= '' ) then
+        
+        if not inbib then
+            output:write(inserted_line .. '\n')
+            inserted_line = ''
+        elseif nonempty_bib then
+            bib:write(inserted_line_bib .. '\n')
+            inserted_line_bib = ''
+        end
+        
     elseif instart then
-        output:write('\n')
+        
+        if not inbib then
+            output:write('\n')
+        elseif nonempty_bib then
+            bib:write('\n')
+        end
+        
     end
     
     --Sections and related end with line
@@ -460,6 +511,9 @@ for line in input:lines() do
     
 end
 
+if nonempty_bib then
+    bib:close()
+end
 output:close()
 input:close()
 
@@ -486,6 +540,13 @@ if controls.execute_tex then
         print('This file is not executable, ending here.')
     else
         --Execute
-        os.execute(vers .. ' ' .. controls.output_file)
+        if not ( has_bib and nonempty_bib ) then
+            os.execute(vers .. ' ' .. controls.output_file)
+        elseif nonempty_bib then
+            os.execute(vers .. ' ' .. controls.output_file)
+            os.execute('bibtex' .. ' ' .. controls.output_file:sub(1,-5))
+            os.execute(vers .. ' ' .. controls.output_file)
+            os.execute(vers .. ' ' .. controls.output_file)
+        end
     end
 end

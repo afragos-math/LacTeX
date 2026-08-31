@@ -5,6 +5,7 @@ return {
     
     input_file      = 'input.txt',          --Which is your input file?
     output_file     = 'file.tex',           --Which is your output file?
+    bib_file        = 'ref.bib',            --Which is your bib file? (Optional, '' for none)
     
     vers_default    = 'pdflatex',           --What should the default version be?
     
