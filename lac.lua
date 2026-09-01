@@ -61,6 +61,7 @@ local custom = {}
 local instart = false
 local inmath = false
 local incommand = false
+local incommand_next = false
 local braceafter = true
 
     --Indices, of course
@@ -354,7 +355,7 @@ for line in input:lines() do
                     inserted_line = inserted_line .. builder(word, environment, inmath, custom)
                 else
                     if word == 'BIB' and nonempty_bib then
-                        output:write('\\nocite{*} \\bibliographystyle{plain} \\bibliography{' .. controls.bib_file:sub(1,-5) .. '}') 
+                        output:write('\\nocite{*} \\bibliographystyle{' .. controls.bib_default .. '} \\bibliography{' .. controls.bib_file:sub(1,-5) .. '}') 
                     else
                         inserted_line_bib = inserted_line_bib .. builder(word, environment, inmath, custom)
                     end
@@ -362,13 +363,14 @@ for line in input:lines() do
             
             else
                 
-                --If inmath, we are in the definition section
-                if inmath then
+                --If incommand_next, we are in the definition section
+                if incommand_next then
                     output:write(builder(word, environment, inmath, custom))
                 elseif word:match('%[(.-)%]') then
                     attributes = word
                 elseif word == 'IS' then
                     inmath = true
+                    incommand_next = true
                     
                     --Check for variables
                     if attributes == '' then
@@ -453,6 +455,7 @@ for line in input:lines() do
                 inbib = false
             elseif newcommand[environment] or declmath[environment] then
                 incommand = false
+                incommand_next = false
                 instart = false
                 inmath = false
                 output:write('}\n')

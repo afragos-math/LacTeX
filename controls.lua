@@ -8,6 +8,7 @@ return {
     bib_file        = 'ref.bib',            --Which is your bib file? (Optional, '' for none)
     
     vers_default    = 'pdflatex',           --What should the default version be?
+    bib_default     = 'plain',              --What is the bibliography style?
     
-    execute_tex     = false,                 --Do you want to compile .tex afterwards?
+    execute_tex     = false,                --Do you want to compile .tex afterwards?
 }

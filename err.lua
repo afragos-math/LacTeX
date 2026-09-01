@@ -15,7 +15,7 @@ local function err(index_dmath, index_math, last_environment, environment)
     if not ( environment == nil or environment == 'DOCUMENT*' ) then
        print('/!\\ Missing END. Last open environment was ' .. last_environment)
        if environment == 'PREDOC' then
-            print('/!\\ Possible issue in the Preable')
+            print('/!\\ Possible issue in the Preamble')
        end
        errors = true
     end
