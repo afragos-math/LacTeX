@@ -1,6 +1,6 @@
 local errors = false
     
-local function err(index_dmath, index_math, last_environment, environment)
+local function err(index_dmath, index_math, last_environment, environment, loop_error)
 
     if index_dmath == 1 then
         print('/!\\ Missing starting or ending display math')
@@ -24,7 +24,12 @@ local function err(index_dmath, index_math, last_environment, environment)
         print('/!\\ Extra END')
         errors = true
     end
-        
+    
+    if loop_error then
+        print('/!\\ Recursion loop on input')
+        errors = true
+    end
+    
     return errors
     
 end

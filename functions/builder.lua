@@ -314,7 +314,7 @@ local generic_end = {
 local punct = {
     ['.']   = true,     ['·']       = true,
     [';']   = true,     [':']       = true,
-    [',']   = true,
+    [',']   = true,     ['»']       = true,
     ['?']   = true,
     ['!']   = true,
     ['\'']  = true,
@@ -326,7 +326,7 @@ local punct = {
 local function builder(word, environment, inmath, custom)
 
     --Initialise
-    local ininput = (word == 'INPUT' or environment == 'INPUT')
+    local ininput = (word == 'INPUT' or environment == 'INPUT' or word == 'LACTEX' or environment == 'LACTEX')
         
     --Sub and supscript
     if ininput then

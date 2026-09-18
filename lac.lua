@@ -7,6 +7,13 @@ local innit = require("functions.innit")
 local split = require("functions.split")
 local translate = require("functions.translate")
 
+--Check LacTeX inputs
+if arg[1] then
+    controls.input_file = arg[1] .. '.txt'
+    controls.output_file = arg[1] .. '.tex'
+    controls.execute_tex = false
+end
+
 --Clear
 local output = io.open(controls.output_file, "w")
 output:write("")
@@ -25,6 +32,8 @@ if nonempty_bib then
 end
 
 --Opening
+print('---This is LacTeX on ' .. controls.input_file)
+
 local input = io.open(controls.input_file, "r")
 output = io.open(controls.output_file, "a")
 if nonempty_bib then
@@ -69,6 +78,7 @@ local braceafter = true
     local index_math = 0
     
 --Errors
+local loop_error = false
 local errors = false
 
 --Predoc environments
@@ -77,6 +87,7 @@ local predoc = {
     ['CLASS']       = true,
     ['INNIT']       = true,
     ['INPUT']       = true,
+    ['LACTEX']      = true,
     ['PAC']         = true,
 }
 
@@ -222,6 +233,18 @@ for line in input:lines() do
             
             if insertion ~= '' then
                 output:write(commands.general('input', insertion))
+            end
+            insertion = word
+        
+        --input LacTeX files
+        elseif environment == 'LACTEX' then
+            
+            --Use default class if none found
+            if insertion == controls.input_file:sub(1,-5) then
+                loop_error = true
+            elseif insertion ~= '' then
+                os.execute('lua lac.lua' .. ' ' .. insertion)
+                output:write(commands.general('input', insertion .. '.tex'))
             end
             insertion = word
         
@@ -527,7 +550,7 @@ else
 end
 
 --Error handling
-errors = err(index_dmath, index_math, environment, environments[#environments])
+errors = err(index_dmath, index_math, environment, environments[#environments], loop_error)
 
 --Messaging
 if errors then
@@ -553,3 +576,5 @@ if controls.execute_tex then
         end
     end
 end
+
+print('---' .. controls.input_file .. ' ended')
