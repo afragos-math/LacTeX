@@ -84,6 +84,7 @@ local braceafter = true
     
 --Errors
 local loop_error = false
+local child_error = false
 local errors = false
 
 --Predoc environments
@@ -248,7 +249,8 @@ for line in input:lines() do
                 for env in pairs(custom) do
                     attributes = attributes .. ' ' .. env
                 end
-                os.execute('lua lac.lua' .. ' ' .. insertion .. attributes)
+                --Select is needed: Lua 5.1 (Debian) spits 0 for success, while Lua 5.4 (Ubuntu) spits true, exit, 0
+                child_error = ( select(-1, os.execute('lua lac.lua' .. ' ' .. insertion .. ' ' .. attributes)) ~= 0 ) or child_error
                 output:write(commands.general('input', insertion .. '.tex'))
             end
             insertion = word
@@ -556,7 +558,7 @@ else
 end
 
 --Error handling
-errors = err(index_dmath, index_math, environment, environments[#environments], loop_error)
+errors = err(index_dmath, index_math, environment, environments[#environments], loop_error, child_error)
 
 --Messaging
 if errors then
@@ -584,3 +586,10 @@ if controls.execute_tex then
 end
 
 print('---' .. controls.input_file .. ' ended')
+
+--Pass errors to parent
+if errors then
+    os.exit(1)
+else
+    os.exit(0)
+end

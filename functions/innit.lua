@@ -11,6 +11,8 @@ local M = {}
         end
     
         return [[
+        
+        \newenvironment{abstr}{\begin{center} {\large \color{color1} \textbf{Synopsis}}\\ \begin{tabular}{!{\color{color1} \vrule width 3pt} p{.8\textwidth} |} \small}{\\\end{tabular}\end{center}}
             
         \newtheorem{theorem}{Theorem}[]] .. numbering .. [[]
         
@@ -130,7 +132,9 @@ local M = {}
         end
             
         return [[
-                
+        
+        \newenvironment{abstr}{\begin{center} {\large \textbf{Σύνοψη}}\\ \begin{tabular}{!{\vrule width 3pt} p{.8\textwidth} |} \small}{\\\end{tabular}\end{center}}
+            
         \newtheorem{theorem}{Θεώρημα}[]] .. numbering .. [[]
                 
         \newtheoremstyle{theorem}

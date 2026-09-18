@@ -1,7 +1,9 @@
 local M = {}
 
     function M.begin_this(word)
-        if word == 'CONJ' then
+        if word == 'ABSTR' then
+            return '\\begin{abstr}'
+        elseif word == 'CONJ' then
             return '\\begin{conjecture}'
         elseif word == 'COR' then
             return '\\begin{corollary}'
@@ -21,7 +23,9 @@ local M = {}
     end
     
     function M.end_this(word)
-        if word == 'CONJ' then
+        if word == 'ABSTR' then
+            return '\\end{abstr}'
+        elseif word == 'CONJ' then
             return '\\end{conjecture}'
         elseif word == 'COR' then
             return '\\end{corollary}'

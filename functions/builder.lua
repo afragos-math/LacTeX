@@ -192,6 +192,7 @@ local inbraces = {
 
 --Theorem-like environments
 local box = {
+    ['ABSTR']   = true,     --Synopsis/Abstract
     ['CONJ']    = true,     --Conjecture
     ['COR']     = true,     --Corollary
     ['DEF']     = true,     --Definition
