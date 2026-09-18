@@ -8,10 +8,17 @@ local split = require("functions.split")
 local translate = require("functions.translate")
 
 --Check LacTeX inputs
+local custom = {}
+
 if arg[1] then
     controls.input_file = arg[1] .. '.txt'
     controls.output_file = arg[1] .. '.tex'
     controls.execute_tex = false
+    if arg[2] then
+        for i = 2, #arg do
+           custom[arg[i]] = true
+        end
+    end
 end
 
 --Clear
@@ -65,8 +72,6 @@ local inbib = false
 local has_bib = false
 local inserted_line_bib = ''
     
-local custom = {}
-    
 local instart = false
 local inmath = false
 local incommand = false
@@ -99,6 +104,7 @@ local start = {
 
 --Generic environments
 local env_generic = {
+    ['ABSTR']           = true,
     ['BIB']             = true,
     ['BIBLIOGRAPHY']    = true,
     ['CENTER']          = true,
@@ -228,9 +234,6 @@ for line in input:lines() do
         --\input{}
         elseif environment == 'INPUT' then
             
-            --Use default class if none found
-            
-            
             if insertion ~= '' then
                 output:write(commands.general('input', insertion))
             end
@@ -239,15 +242,18 @@ for line in input:lines() do
         --input LacTeX files
         elseif environment == 'LACTEX' then
             
-            --Use default class if none found
             if insertion == controls.input_file:sub(1,-5) then
                 loop_error = true
             elseif insertion ~= '' then
-                os.execute('lua lac.lua' .. ' ' .. insertion)
+                for env in pairs(custom) do
+                    attributes = attributes .. ' ' .. env
+                end
+                os.execute('lua lac.lua' .. ' ' .. insertion .. attributes)
                 output:write(commands.general('input', insertion .. '.tex'))
             end
             insertion = word
-        
+            attributes = ''
+            
         --usepackage[]{}
         elseif environment == 'PAC' then
             
